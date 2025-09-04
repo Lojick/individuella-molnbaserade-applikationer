@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
+using Microsoft.Data.SqlClient;
 using System.Net.Mail;
 
 namespace Individuella;
@@ -23,7 +24,7 @@ public class HttpRegisterVisitor
     {
         _logger.LogInformation("C# HTTP trigger function processed a request.");
 
-        //Läser in formen från Frontenden
+        //Läser in form från Frontend
         var form = await req.ReadFormAsync();
 
         //Hämtar värderna från formuläret och gör om till vanliga strängar
@@ -69,6 +70,28 @@ public class HttpRegisterVisitor
         if (string.IsNullOrWhiteSpace(email) || !MailAddress.TryCreate(email, out _))
             return new BadRequestObjectResult("Ogiltig e-postadress.");
 
-        return new OkObjectResult($"Välkommen, {name}");
+        //Spara till databasen
+        string connStr = Environment.GetEnvironmentVariable("SqlConnectionString");
+        try
+        {
+            using var conn = new SqlConnection(connStr);
+            await conn.OpenAsync();
+
+            string sql = "INSERT INTO Visitors (Name, Age, Email) VALUES (@Name, @Age, @Email)";
+            using var cmd = new SqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("@Name", name);
+            cmd.Parameters.AddWithValue("@Age", age);
+            cmd.Parameters.AddWithValue("@Email", email);
+
+            await cmd.ExecuteNonQueryAsync();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Fel vid databasinsert");
+            return new BadRequestObjectResult("Kunde inte spara till databasen.");
+        }
+
+        //Svar tillbaka till användaren
+        return new OkObjectResult($"Välkommen, {name}! Din registering är sparad.");
     }
 }
