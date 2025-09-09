@@ -3,20 +3,27 @@
 
 <head>
     <title>Besöksformulär</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-
-    <h1>Hej, besökare! Ange dina uppgifter på formuläret nedan.</h1>
-    <form action="https://individuellafunctionapp-etfvbqhme4eqavfn.germanywestcentral-01.azurewebsites.net/api/httpregistervisitor" method="POST">
-        <label for="name">Namn:</label><br>
-        <input type="text" id="name" name="name" required><br>
-        <label for="age">Ålder:</label><br>
-        <input type="number" id="age" name="age" required><br>
-        <label for="email">Email:</label><br>
-        <input type="email" id="email" name="email" required><br>
-        <input type="submit" value="Skicka in">
-    </form>
+    <div id="container">
+        <h1>Hej! Ange dina uppgifter på formuläret nedan.</h1>
+        <form id="visitorForm">
+            <label for="name">Namn:</label><br>
+            <input type="text" id="name" name="name" required><br>
+            <label for="age">Ålder:</label><br>
+            <input type="number" id="age" name="age" required><br>
+            <label for="email">Email:</label><br>
+            <input type="email" id="email" name="email" required><br>
+            <input type="submit" value="Skicka in">
+            <p id="message"></p>
+        </form>
+    </div>
+    <footer>
+        <p>@2025 Individuella by Lorik</p>
+    </footer>
+    <script src="script.js"></script>
 </body>
 
 </html>
