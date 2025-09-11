@@ -67,10 +67,17 @@ public class HttpRegisterVisitor
 
             await cmd.ExecuteNonQueryAsync();
         }
+        catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+        {
+            // Om e-postadressen redan existerar i databasen så kastas ett fel.
+            _logger.LogWarning(ex, "E-post redan registrerad: {Email}", email);
+            return new ConflictObjectResult("E-postadressen är redan registrerad.");
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Fel vid databasinsert.");
-            return new BadRequestObjectResult("Kunde inte spara till databasen.");
+            return new ObjectResult("Kunde inte spara till databasen.")
+            { StatusCode = StatusCodes.Status500InternalServerError };
         }
 
         return new OkObjectResult($"Välkommen, {name}! Din registrering är sparad.");
