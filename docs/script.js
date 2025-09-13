@@ -2,7 +2,7 @@ document.getElementById("visitorForm").addEventListener("submit", async function
     e.preventDefault(); //stoppa omladdning
 
     const formData = new FormData(this);
-
+    //API endpoint till Azure Function i molnet
     const response = await fetch("https://individuellafunctionapp-etfvbqhme4eqavfn.germanywestcentral-01.azurewebsites.net/api/HttpRegisterVisitor", {
         method: "POST",
         body: formData
